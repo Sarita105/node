@@ -77,3 +77,4 @@ yargs.parse();
 // fs.appendFileSync('notes.txt', ' Appended this using node.');
 // const sum = add(4, -2);
 // console.log('app.js', sum);
+console.log(process.argv)
