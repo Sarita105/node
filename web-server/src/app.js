@@ -55,15 +55,15 @@ app.get('/weather', (req, res) => {
     })
 });
 app.get('/help/*', (req, res) => {
-    res.render('otherErrorpage',{
+    res.render('404',{
         message: 'help article not found!',
         title: '/help/*',
         name: 'Sarita Mandal'
     })
 })
 app.get('*', (req, res) => {
-    res.render('genericNotfound',{
-        message: '404',
+    res.render('404',{
+        message: '404 for all',
         title: '*',
         name: 'Sarita Mandal'
     })
