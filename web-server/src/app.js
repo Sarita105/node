@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/weatherStack');
 
 const app = express();
 
@@ -49,9 +51,38 @@ app.get('/help', (req, res) => {
 //     res.send('<h1>About</h1>')
 // });
 app.get('/weather', (req, res) => {
+    if(!req.query.address) {
+        return res.send({
+            error: 'must provide the address query!'
+        })
+    }
+    geocode(req.query.address, (error, {lat, long, location}={}) => {
+        if(error) {
+            return res.send({
+                error: 'problem with geo call'
+            })
+        }
+    forecast(lat, long, (error, forcastData) => {
+        if(error) {
+            return res.send({
+                error:'problem with weather call'
+            })
+        }
+        res.send({
+            location: location,
+            forcastData: forcastData,
+        })
+    });
+    });
+});
+app.get('/products', (req, res) => {
+    if(!req.query.search) {
+       return res.send({
+            error: 'you must provide the search term'
+        })
+    }
     res.send({
-        forecast: 50,
-        location: 'Kolkata'
+        products: []
     })
 });
 app.get('/help/*', (req, res) => {
