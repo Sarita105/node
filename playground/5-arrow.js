@@ -11,7 +11,7 @@ const obj2 ={
 }
 const {name1: productNammme , age, rating = 5} = obj2;//new name to name1
 
-const transaction = (type, {name1, age}) => {
+const transaction = (type, {name1, age = 0} = {}) => {//setting up a default value
 
 }
 transaction('order', obj2)
