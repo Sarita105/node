@@ -12,12 +12,24 @@
 // console.log(d)
 // })
 
-const add = (a, b, cb) => {
-    const sum = a+b;
-    setTimeout(() => {
-cb(sum);
+// const add = (a, b, cb) => {
+//     const sum = a+b;
+//     setTimeout(() => {
+// cb(sum);
+//     },2000);
+// }
+// add(1, 2, (sum) => {
+//     console.log(sum);
+// })
+
+const doWorkcallback = (callback) => {
+    setTimeout(()=>{
+        callback(undefined,'err');
     },2000);
 }
-add(1, 2, (sum) => {
-    console.log(sum);
-})
+doWorkcallback((error, result) => {
+    if(error) {
+        return console.log(error);
+    };
+    console.log(result)
+});

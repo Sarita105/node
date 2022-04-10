@@ -17,12 +17,54 @@ MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client) => {
       return console.log('wrong',error);
   }
   const db = client.db(databaseName)
-  db.collection('users').findOne({_id: new ObjectID('xscvfgbhn56')}, (error, user) => {
-    if(error) {
-      return console.log('unable to find user');
-    }
-    console.log(user);
-  })
+  
+  
+ db.collection('users').deleteMany({name: 'name2'}).then(result => console.log(result)).catch(err => console.log(err))
+  // const updatePromise = db.collection('users').updateOne({_id: new ObjectID("62524702ab2cf55a149197fd")}, {
+  //   $inc: {
+  //     age: 2
+  //   }
+  // });
+  // updatePromise.then(result => console.log(result)).catch(err => console.log(err))
+
+  
+//  db.collection('tasks').updateMany({completed: false}, {
+//     $set: {
+//       completed: true
+//     }
+//   }).then(result => console.log(result)).catch(err => console.log(err))
+  // db.collection('users').findOne({_id: new ObjectID('xscvfgbhn56')}, (error, user) => {
+  //   if(error) {
+  //     return console.log('unable to find user');
+  //   }
+  //   console.log(user);
+  // })
+  // db.collection('users').find({age: 900}).toArray((error, users) => {
+  //   if(error) {
+  //     return console.log(error);
+  //   };
+  //   console.log(users);
+  // });
+
+  // db.collection('users').find({age: 900}).count((error, count) => {
+  //   if(error) {
+  //     return console.log(error);
+  //   };
+  //   console.log(count);
+  // })
+  // db.collection('tasks').find({_id: new ObjectID('62524bbb4f32fe6960258fd1')}).toArray((error, users) => {
+  //   if(error) {
+  //     return console.log(error);
+  //   };
+  //   console.log(users);
+  // });
+
+  // db.collection('tasks').find({completed: false}).count((error, count) => {
+  //   if(error) {
+  //     return console.log(error);
+  //   };
+  //   console.log(count);
+  // })
   // db.collection('users').insertOne({
   //   _id: id,
   //   name:'Vikram',
