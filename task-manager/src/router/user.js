@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 const router = new express.Router();
 
 //signup route public
@@ -7,7 +8,8 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body);
     try {
         await user.save();
-        res.status(201).send(user);
+        const token = await user.generateAuthtoken();
+        res.status(201).send({user,token});
     } catch(e) {
         res.status(400).send(e);
     }
@@ -23,19 +25,40 @@ router.post('/users', async (req, res) => {
 router.post('/users/login', async (req, res) => {
     try{
         const user = await User.findByCredentials(req.body.email, req.body.password);
-        res.send(user);
+        const token = await user.generateAuthtoken();
+       // res.send({user: user.getPublicProfile(), token}); this would be one way to not send pw and tokens
+       res.send({user, token});
     }catch(e) {
         res.status(400).send();
     }
 });
-
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find({});
-        res.send(users)
+router.post('/users/logout', auth, async (req, res) => {
+    try{
+        req.user.tokens = req.user.tokens.filter(token => token.token !== req.token);
+        await req.user.save();
+        res.send();
     } catch(e) {
         res.status(500).send();
     }
+})
+router.post('/users/logoutall',auth, async (req, res) => {
+    try{
+        req.user.tokens = [];
+        await req.user.save();
+        res.send();
+    }catch(e) {
+        res.status(500).send();
+    }
+})
+router.get('/users/me',auth, async (req, res) => {
+   res.send(req.user)
+    // try {
+    //     console.log(req.user)
+    //     const users = await User.find({});
+    //     res.send( users)
+    // } catch(e) {
+    //     res.status(500).send();
+    // }
     // User.find({}).then((users) => {
     //     res.send(users)
     // }).catch(e =>{
@@ -43,28 +66,29 @@ router.get('/users', async (req, res) => {
     // } )
 });
 
-router.get('/users/:id', async (req, res) => {
-    const _id = req.params.id;
-    try {
-        const user = await User.findById(_id);
-        if(!user) {
-            return res.status(404).send()
-        }
-        res.send(user)
-    } catch(e){
-        res.status(500).send()
-    }
+// router.get('/users/:id', async (req, res) => {
+//     const _id = req.params.id;
+//     try {
+//         const user = await User.findById(_id);
+//         if(!user) {
+//             return res.status(404).send()
+//         }
+//         res.send(user)
+//     } catch(e){
+//         res.status(500).send()
+//     }
     
-    // User.findById(_id).then((user) => {
-    //     if(!user) {
-    //         return res.status(404).send()
-    //     }
-    //     res.send(user)
-    // }).catch((e) => {
-    //     res.status(500).send()
-    // })
-})
-router.patch('/users/:id', async (req, res) => {
+//     // User.findById(_id).then((user) => {
+//     //     if(!user) {
+//     //         return res.status(404).send()
+//     //     }
+//     //     res.send(user)
+//     // }).catch((e) => {
+//     //     res.status(500).send()
+//     // })
+// })
+// router.patch('/users/:id', async (req, res) => {
+    router.patch('/users/me',auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowUpdates = ["name", "email", "password", "age"];
     const isValidOperation = updates.every(u => allowUpdates.includes(u));
@@ -72,27 +96,31 @@ router.patch('/users/:id', async (req, res) => {
         return res.status(400).send('err: invalid parameters to update');
     }
     try{
-        const user = await User.findById(req.params.id);
+        // const user = await User.findById(req.params.id);
+        const user = await req.user;
         updates.forEach(update => user[update] = req.body[update]);
         await user.save();
         //findByIdAndUpdate bypass middleware so we had to put runValidators also
         //const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
-        if(!user){
-            return res.status(404).send('user not found')
-        }
+        // if(!user){
+        //     return res.status(404).send('user not found')
+        // }
         res.send(user)
     }catch(e) {
         res.status(400).send(e)
     }
 });
 
-router.delete('/users/:id', async (req, res) => {
+// router.delete('/users/:id', async (req, res) => {
+    router.delete('/users/me',auth, async (req, res) => {
     try{
-        const user = await User.findByIdAndDelete(req.params.id);
-        if(!user) {
-           return res.status(400).send()
-        }
-        res.send(user)
+        // const user = await User.findByIdAndDelete(req.params.id);
+        // const user = await User.findByIdAndDelete(req.user._id);
+        // if(!user) {
+        //    return res.status(400).send()
+        // }
+        await req.user.remove();
+        res.send(req.user)
     }catch(e) {
         return res.status(500).send(e)
     }
