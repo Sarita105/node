@@ -16,6 +16,34 @@ const port = process.env.PORT || 3000;
 //     // }
    
 // });
+//\.(doc|docx)$
+// const multer = require('multer');
+// const upload = multer({
+//     dest: 'images',
+//     limits: {
+//         fileSize: 1000000//1mb
+//     },
+//     fileFilter(req, file, cb) {
+//         // if(!file.originalname.endsWith('.pdf')) {
+//             if(!file.originalname.match(/\.(doc|docx)$/)) {
+//             return cb(new Error('upload the file'));
+//         };
+//         cb(undefined, true);
+//         // cb(new Error('upload the file'));
+//         // cb(undefined, true);
+//         // cb(undefined, false);
+
+//     }
+// });
+// const errorMiddleware = (req, res, next) => {
+//     throw new Error('err from img middlware!');
+// }
+// // upload.single('upload')
+// app.post('/upload',upload.single('upload'), (req,res) => {
+//     res.send()
+// }, (error, req,res,next)=>{
+//     res.status(400).send({error: error.message});
+// })
 
 app.use(express.json());//parse all the json data
 
@@ -25,54 +53,3 @@ app.use(taskRouter);
 app.listen(port, () => {
     console.log('server is up on port'+port);
 })
-
-// const jwt = require('jsonwebtoken');
-// // jwt containd three part seperated by "." 1st one is 64 bit header which contains the what the jwt is about.
-// // 2nd part is payload. base 64 json data we provide ie the id we have provided.
-// // 3rd is signature. to verify token.
-// const myFunction = async () => {
-//     const token = jwt.sign({ _id: 'abcd1234'}, 'myfirstjwye', {expiresIn: '7 days'});//1st arg is obj containing unique key and 2nd one is secret key/token
-//     console.log(token);
-//     const data = jwt.verify(token,'myfirstjwye' );
-//     console.log(data)
-// }
-// myFunction();
-// const bcrypt = require('bcryptjs');
-// //hashing non reversible but encryption is reversible
-// const myFunction = async () => {
-//     try{
-//         const password = 'Red1234!';
-//         const hashedPassword = await bcrypt.hash(password, 8);
-//         console.log(password)
-//         console.log(hashedPassword)
-
-//         const isMatch = await bcrypt.compare('Red1234!',hashedPassword )
-//         console.log(isMatch)
-//     }catch(e) {
-//         console.log(e)
-//     }
-   
-// }
-// myFunction();
-// const pet = {
-//     name: 'cat',
-// }
-// pet.toJSON = function() {
-//     const pet = this;
-//     pet.age = 2;
-//     pet.name = 'tania';
-//     return pet;
-// }
-// console.log(JSON.stringify(pet));
-
-// const Tasks = require('./models/task');
-// const User = require('./models/user');
-// const main = async () => {
-//     // const task = await Tasks.findById('6257a90ca35b64667c002369');
-//     // await task.populate('owner').execPopulate()
-//     // console.log(task.owner)
-//     const user = await User.findById('6257a77dd4b5a4853874f99a');
-//     await user.populate('tasks').execPopulate()
-//     console.log(user.tasks)
-// };
-// main();

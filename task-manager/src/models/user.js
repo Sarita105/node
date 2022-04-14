@@ -47,7 +47,12 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true,
         }
-    }]
+    }],
+    avater: {
+        type: Buffer,
+    }
+}, {
+    timestamps: true,
 });
 userSchema.virtual('tasks', {
     ref: 'Tasks',
@@ -60,6 +65,7 @@ userSchema.methods.toJSON = function() {
     const userObject = user.toObject();
     delete userObject.password;
     delete userObject.tokens;
+    delete userObject.avater;
     return userObject;
 }
 //this  this would be one way to not send pw and tokens

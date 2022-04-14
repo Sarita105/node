@@ -1,6 +1,8 @@
 const express = require('express');
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+const multer = require('multer');
+const sharp = require('sharp');
 const router = new express.Router();
 
 //signup route public
@@ -126,5 +128,52 @@ router.get('/users/me',auth, async (req, res) => {
     }
   
 });
+const avater = multer({
+        // dest: 'images',
+        // limits: {
+        //     fileSize: 1000000//1mb
+        // },
+        fileFilter(req, file, cb) {
+            // if(!file.originalname.endsWith('.pdf')) {
+                if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+                return cb(new Error('upload the file'));
+            };
+            cb(undefined, true);
+            // cb(new Error('upload the file'));
+            // cb(undefined, true);
+            // cb(undefined, false);
+    
+        }
+    });
+router.post('/users/me/avater', auth,avater.single('avater'),async (req,res) => {
+    const buffer = await sharp(req.file.buffer).resize({width:250,height:250}).png().toBuffer();
+    req.user.avater = buffer;
+    //req.user.avater = req.file.buffer;
+    await req.user.save();
+    res.send();
+}, (error, req,res,next)=>{
+    res.status(400).send({error: error.message});
+});
+//delete avater
+router.delete('/users/me/avater', auth,async (req,res) => {
+    req.user.avater = undefined;
+    await req.user.save();
+    res.send();
+}, (error, req,res,next)=>{
+    res.status(400).send({error: error.message});
+})
+router.get('/users/:id/avater', async(req,res) => {
+    try{
+        const user = await User.findById(req.params.id);
+        if(!user || !user.avater) {
+            throw new Error('cannot find avater');
+        }
+//set up res header
+        res.set('Content-Type','image/png');
+        res.send(user.avater)
+    }catch(e) {
+        res.status(404).send()
+    }
+})
 
 module.exports = router;
