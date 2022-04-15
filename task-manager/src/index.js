@@ -4,7 +4,8 @@ const userRouter = require('./router/user');
 const taskRouter = require('./router/task');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT
+//"dev": "env-cmd ./config/dev.env nodemon src/index.js"
 
 //before all app.use -> express middleware -> (new req -> do something-> router handler)
 // app.use((req, res, next) => {
